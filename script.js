@@ -190,8 +190,8 @@ async function processOrder() {
     } catch (e) { console.error("Error Sheets"); }
 
     // Formateo WhatsApp
-    let msg = `Hola *el izquierdo c.a*, nuevo pedido:%0A%0A`;
-    msg += `👤 *Cliente:* ${name}%0A💳 *CI:* ${id}%0A📞 *Tlf:* ${phone}%0A📍 *Dir:* ${addr}%0A%0A*PRODUCTOS:*%0A`;
+    let msg = `Hola el izquierdo c.a, nuevo pedido:%0A%0A`;
+    msg += `👤 Cliente: ${name}%0A💳 CI: ${id}%0A📞 Tlf: ${phone}%0A📍 Dir: ${addr}%0A%0A*PRODUCTOS:*%0A`;
     cart.forEach((i, idx) => msg += `${idx + 1}. ${i.name} ($${i.price.toFixed(2)})%0A`);
     msg += `%0A💰 *TOTAL: $${total}*`;
 
