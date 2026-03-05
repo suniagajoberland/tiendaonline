@@ -1,216 +1,151 @@
 const SHEET_ID = "1wWBUWFJRtm3MnPD6OmRYNa8tXvxjeL9sYcQvN4Mcrdg";
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymLB7fnfcIrsumvpH3J9UMKJG_Z8-sJrUc5OxVNeUssfb6TGtay0EH-H-q1oDNTB0J/exec"; 
-const PROVEEDORES = ["Proveedor_A", "Proveedor_B"];
 const WHATSAPP_NUMBER = "584143126327";
 
 let allProducts = [];
-let filteredProducts = [];
-let cart = [];
+let cart = []; // Estructura: { name, price, qty }
 let currentPage = 1;
 const productsPerPage = 12;
 
 async function init() {
-    const loader = document.getElementById("loader");
-    allProducts = [];
-
-    for (const prov of PROVEEDORES) {
-        const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(prov)}`;
-        try {
-            const res = await fetch(URL);
+    const proveedores = ["Proveedor_A", "Proveedor_B"];
+    try {
+        for (const prov of proveedores) {
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(prov)}`;
+            const res = await fetch(url);
             const csv = await res.text();
             const rows = csv.split("\n").slice(1);
-            rows.forEach((row) => {
+            rows.forEach(row => {
                 const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if (cols.length >= 5) {
+                if (cols.length >= 3 && cols[0].trim() !== "") {
                     allProducts.push({
                         nombre: cols[0].replace(/"/g, "").trim(),
-                        desc: cols[1].replace(/"/g, "").trim(),
-                        precio: parseFloat(cols[2].replace(/"/g, "").trim()) || 0,
-                        img: cols[3].replace(/"/g, "").trim(),
-                        etiqueta: cols[4] ? cols[4].replace(/"/g, "").trim() : "",
+                        desc: cols[1] ? cols[1].replace(/"/g, "").trim() : "",
+                        precio: parseFloat(cols[2]?.replace(/"/g, "").trim()) || 0,
+                        img: cols[3] ? cols[3].replace(/"/g, "").trim() : "",
+                        etiqueta: cols[4] ? cols[4].replace(/"/g, "").trim() : ""
                     });
                 }
             });
-        } catch (e) { console.error("Error cargando proveedor", e); }
-    }
-
-    if (loader) loader.style.display = "none";
-    filteredProducts = [...allProducts];
-    updateDisplay();
-    setupValidation(); 
+        }
+        document.getElementById("loader").style.display = "none";
+        renderProducts();
+        setupSearch();
+        setupFormValidation();
+    } catch (e) { console.error("Error:", e); }
 }
 
-function updateDisplay() {
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const productsToDisplay = filteredProducts.slice(startIndex, startIndex + productsPerPage);
+function renderProducts(filteredList = null) {
     const grid = document.getElementById("product-grid");
+    const list = filteredList || allProducts;
+    const paginatedItems = list.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
 
-    grid.innerHTML = productsToDisplay.map((p) => {
-        const badgeHTML = p.etiqueta && p.etiqueta.length > 2 ? `<span class="badge-personalizado">${p.etiqueta}</span>` : "";
-        return `
-            <div class="card">
-                <div class="card-img-container">
-                    <img src="${p.img}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/300x200?text=Imagen'">
-                    ${badgeHTML}
-                </div>
-                <h3>${p.nombre}</h3>
-                <p>${p.desc}</p>
-                <div class="price">$${p.precio.toFixed(2)}</div>
-                <button class="btn-add" onclick="addToCart('${p.nombre.replace(/'/g, "\\'")}', ${p.precio})">Añadir al Pedido</button>
-            </div>`;
-    }).join("");
-    renderPagination();
+    grid.innerHTML = paginatedItems.map(p => `
+        <div class="card">
+            ${p.etiqueta ? `<span class="badge-personalizado">${p.etiqueta}</span>` : ''}
+            <div class="card-img-container"><img src="${p.img || 'https://via.placeholder.com/300'}" alt="${p.nombre}"></div>
+            <h3 style="font-size: 0.9rem; font-weight: 800;">${p.nombre}</h3>
+            <p style="font-size: 0.75rem; color: #666; margin: 10px 0;">${p.desc}</p>
+            <div class="price">$${p.precio.toFixed(2)}</div>
+            <button class="btn-add" onclick="addToCart('${p.nombre.replace(/'/g, "\\'")}', ${p.precio})">Añadir al pedido</button>
+        </div>
+    `).join("");
 }
 
-function renderPagination() {
-    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-    const container = document.getElementById("pagination-controls");
-    if(!container) return;
-    container.innerHTML = "";
-    if (totalPages <= 1) return;
-
-    for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement("button");
-        btn.innerText = i;
-        btn.className = `page-btn ${currentPage === i ? "active" : ""}`;
-        btn.onclick = () => {
-            currentPage = i;
-            updateDisplay();
-            document.getElementById("catalogo").scrollIntoView({ behavior: "smooth" });
-        };
-        container.appendChild(btn);
-    }
-}
-
-// BÚSQUEDA
-document.getElementById("searchInput").addEventListener("input", (e) => {
-    const term = e.target.value.toLowerCase();
-    filteredProducts = allProducts.filter((p) => p.nombre.toLowerCase().includes(term));
-    currentPage = 1;
-    updateDisplay();
-});
-
-// GESTIÓN DE CARRITO
+// LOGICA DE CANTIDADES
 function addToCart(name, price) {
-    cart.push({ name, price });
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        cart.push({ name, price, qty: 1 });
+    }
     updateCartUI();
+    if (!document.getElementById("cart-panel").classList.contains("active")) toggleCart();
+}
+
+function updateCartUI() {
+    const cartCount = document.getElementById("cart-count");
+    const cartItems = document.getElementById("cart-items");
+    const cartTotal = document.getElementById("cart-total-value");
+    
+    cartCount.innerText = cart.reduce((acc, i) => acc + i.qty, 0);
+    
+    let totalMoney = 0;
+    cartItems.innerHTML = cart.map((item, index) => {
+        const subtotal = item.price * item.qty;
+        totalMoney += subtotal;
+        return `
+            <div class="cart-item-row">
+                <div style="display: flex; align-items: center;">
+                    <span class="qty-badge">${item.qty}x</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.8rem;">${item.name}</div>
+                        <div style="color: #d4af37; font-size: 0.75rem;">$${subtotal.toFixed(2)}</div>
+                    </div>
+                </div>
+                <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ccc; cursor:pointer;"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+    }).join("");
+    cartTotal.innerText = totalMoney.toFixed(2);
     validateForm();
 }
 
 function removeFromCart(index) {
     cart.splice(index, 1);
     updateCartUI();
-    validateForm();
 }
 
-function clearFullCart() {
-    cart = [];
-    updateCartUI();
-    validateForm();
-}
+function toggleCart() { document.getElementById("cart-panel").classList.toggle("active"); }
 
-function updateCartUI() {
-    const itemsDiv = document.getElementById("cart-items");
-    const countSpan = document.getElementById("cart-count");
-    countSpan.innerText = cart.length;
-
-    if (cart.length === 0) {
-        itemsDiv.innerHTML = `<p style="text-align:center; padding:20px; font-size:0.8rem; color:#999;">Vacío</p>`;
-        document.getElementById("cart-total-value").innerText = "0.00";
-        return;
-    }
-
-    let total = 0;
-    itemsDiv.innerHTML = cart.map((item, index) => {
-        total += item.price;
-        return `
-            <div class="cart-item-row" style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #eee;">
-                <div style="flex:1; font-size:0.75rem;">
-                    <b>${item.name}</b><br>$${item.price.toFixed(2)}
-                </div>
-                <button onclick="removeFromCart(${index})" style="color:#ff4757; border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
-            </div>`;
-    }).join("");
-    
-    itemsDiv.innerHTML += `<button onclick="clearFullCart()" style="width:100%; margin-top:10px; padding:5px; font-size:0.7rem; cursor:pointer; border:1px solid #ddd; background:#fff;">Vaciar todo</button>`;
-    document.getElementById("cart-total-value").innerText = total.toFixed(2);
-}
-
-// VALIDACIÓN
-function setupValidation() {
+function setupFormValidation() {
     ['cust-name', 'cust-id', 'cust-phone', 'cust-address'].forEach(id => {
         document.getElementById(id).addEventListener('input', validateForm);
     });
 }
 
 function validateForm() {
-    const name = document.getElementById('cust-name').value.trim();
-    const id = document.getElementById('cust-id').value.trim();
-    const phone = document.getElementById('cust-phone').value.trim();
-    const addr = document.getElementById('cust-address').value.trim();
+    const n = document.getElementById('cust-name').value.trim();
+    const i = document.getElementById('cust-id').value.trim();
+    const p = document.getElementById('cust-phone').value.trim();
+    const a = document.getElementById('cust-address').value.trim();
     const btn = document.getElementById('btn-finalize');
-
-    if (name && id && phone && addr && cart.length > 0) {
-        btn.disabled = false;
-        btn.classList.remove('disabled');
-    } else {
-        btn.disabled = true;
-        btn.classList.add('disabled');
-    }
+    const isValid = n.length > 3 && i.length > 5 && p.length > 7 && a.length > 5 && cart.length > 0;
+    btn.disabled = !isValid;
+    btn.classList.toggle('disabled', !isValid);
 }
 
-function toggleCart() {
-    document.getElementById("cart-panel").classList.toggle("active");
-}
+function processOrder() {
+    const n = document.getElementById('cust-name').value;
+    const i = document.getElementById('cust-id').value;
+    const p = document.getElementById('cust-phone').value;
+    const a = document.getElementById('cust-address').value;
+    const t = document.getElementById('cart-total-value').innerText;
 
-// PROCESAR Y LIMPIAR
-async function processOrder() {
-    const name = document.getElementById('cust-name').value;
-    const id = document.getElementById('cust-id').value;
-    const phone = document.getElementById('cust-phone').value;
-    const addr = document.getElementById('cust-address').value;
-    const total = document.getElementById('cart-total-value').innerText;
+    let prodTxt = cart.map(item => `${item.qty}x ${item.name} ($${(item.price*item.qty).toFixed(2)})`).join('%0A');
+    const msg = `*NUEVO PEDIDO - EL IZQUIERDO C.A*%0A%0A*Cliente:* ${n}%0A*CI/RIF:* ${i}%0A*Dir:* ${a}%0A%0A*Productos:*%0A${prodTxt}%0A%0A*TOTAL: $${t}*`;
+    
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 
-    const pedidoData = {
-        cliente: name, 
-        cedula: id, 
-        telefono: phone, 
-        direccion: addr,
-        productos: cart.map(i => i.name).join(', '), 
-        total: total
-    };
-
-    // Envío a Sheets
-    try {
-        fetch(APPS_SCRIPT_URL, { 
-            method: 'POST', 
-            mode: 'no-cors', 
-            body: JSON.stringify(pedidoData) 
-        });
-    } catch (e) { console.error("Error Sheets"); }
-
-    // Formateo WhatsApp
-    let msg = `Hola el izquierdo c.a, nuevo pedido:%0A%0A`;
-    msg += `👤 Cliente: ${name}%0A💳 CI: ${id}%0A📞 Tlf: ${phone}%0A📍 Dir: ${addr}%0A%0A*PRODUCTOS:*%0A`;
-    cart.forEach((i, idx) => msg += `${idx + 1}. ${i.name} ($${i.price.toFixed(2)})%0A`);
-    msg += `%0A💰 *TOTAL: $${total}*`;
-
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
-
-    // LIMPIEZA TOTAL (Formulario + Carrito)
+    // LIMPIEZA AUTOMÁTICA
     setTimeout(() => {
-        cart = []; // Vaciar array del carrito
-        updateCartUI(); // Refrescar visualmente el carrito
-        
-        // Limpiar campos del formulario
-        document.getElementById('cust-name').value = ""; 
-        document.getElementById('cust-id').value = "";
-        document.getElementById('cust-phone').value = "";
-        document.getElementById('cust-address').value = "";
-        
-        validateForm(); // Bloquear botón nuevamente
-        toggleCart();   // Cerrar el panel del carrito
-    }, 1000);
+        cart = [];
+        updateCartUI();
+        ['cust-name', 'cust-id', 'cust-phone', 'cust-address'].forEach(id => document.getElementById(id).value = "");
+        validateForm(); toggleCart();
+    }, 1200);
+}
+
+function setupSearch() {
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allProducts.filter(p => p.nombre.toLowerCase().includes(term));
+        renderProducts(filtered);
+    });
+}
+
+function consultarServicios() {
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=Hola El Izquierdo C.A, solicito información de servicios técnicos.`, '_blank');
 }
 
 document.addEventListener("DOMContentLoaded", init);

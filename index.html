@@ -34,14 +34,32 @@
         <div class="marquee-wall">
             <div class="marquee-row">
                 <div class="marquee-content">
-                    <span>EL IZQUIERDO C.A • SEGURIDAD • SOPORTE • INSTALACIÓN • VENTAS •</span>
-                    <span>EL IZQUIERDO C.A • SEGURIDAD • SOPORTE • INSTALACIÓN • VENTAS •</span>
+                    <span>HIKVISION • DAHUA • UBIQUITI • TP-LINK • INTEL • WESTERN DIGITAL •</span>
+                    <span>HIKVISION • DAHUA • UBIQUITI • TP-LINK • INTEL • WESTERN DIGITAL •</span>
                 </div>
             </div>
             <div class="marquee-row marquee-right">
                 <div class="marquee-content">
-                    <span>TECNOLOGÍA • CALIDAD • CONFIANZA • RESPALDO • SERVICIO •</span>
-                    <span>TECNOLOGÍA • CALIDAD • CONFIANZA • RESPALDO • SERVICIO •</span>
+                    <span>CISCO • SEAGATE • EPSON • HP • DELL • LOGITECH • CANON •</span>
+                    <span>CISCO • SEAGATE • EPSON • HP • DELL • LOGITECH • CANON •</span>
+                </div>
+            </div>
+            <div class="marquee-row">
+                <div class="marquee-content">
+                    <span>ZKTeco • HEYI • PARADOX • DSC • JFL ALARMES • ALHUA •</span>
+                    <span>ZKTeco • HEYI • PARADOX • DSC • JFL ALARMES • ALHUA •</span>
+                </div>
+            </div>
+            <div class="marquee-row marquee-right">
+                <div class="marquee-content">
+                    <span>MIKROTIK • TENDA • MERCUSYS • KINGSTON • CRUCIAL • SANDISK •</span>
+                    <span>MIKROTIK • TENDA • MERCUSYS • KINGSTON • CRUCIAL • SANDISK •</span>
+                </div>
+            </div>
+            <div class="marquee-row">
+                <div class="marquee-content">
+                    <span>EL IZQUIERDO C.A • CALIDAD • SEGURIDAD • SOPORTE • TECNOLOGÍA •</span>
+                    <span>EL IZQUIERDO C.A • CALIDAD • SEGURIDAD • SOPORTE • TECNOLOGÍA •</span>
                 </div>
             </div>
         </div>
@@ -55,11 +73,9 @@
     <section id="catalogo" class="catalog-section">
         <div class="container">
             <h2 class="section-title">Nuestro Catálogo</h2>
-            <div id="loader" style="text-align: center; padding: 20px;">Cargando inventario...</div>
-            <div id="product-grid" class="grid-layout">
-                </div>
-            <div id="pagination-controls" class="pagination-container">
-                </div>
+            <div id="loader" style="text-align: center; padding: 20px; font-weight: 800; color: #d4af37;">Cargando inventario...</div>
+            <div id="product-grid" class="grid-layout"></div>
+            <div id="pagination-controls" class="pagination-container"></div>
         </div>
     </section>
 
@@ -70,18 +86,23 @@
                 <div class="service-card">
                     <i class="fas fa-tools service-icon"></i>
                     <h3>Instalación</h3>
-                    <p>Configuración experta de sistemas de seguridad, redes y equipos tecnológicos de última generación.</p>
+                    <p>Configuración experta de sistemas de seguridad, redes y equipos tecnológicos.</p>
                 </div>
                 <div class="service-card">
                     <i class="fas fa-headset service-icon"></i>
                     <h3>Soporte</h3>
-                    <p>Asistencia técnica especializada y remota para resolver cualquier inconveniente con sus equipos.</p>
+                    <p>Asistencia técnica especializada y remota para sus equipos.</p>
                 </div>
                 <div class="service-card">
                     <i class="fas fa-sync-alt service-icon"></i>
                     <h3>Mantenimiento</h3>
-                    <p>Planes preventivos y correctivos diseñados para prolongar la vida útil de su inversión tecnológica.</p>
+                    <p>Planes preventivos para prolongar la vida útil de su inversión.</p>
                 </div>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn-servicios" onclick="consultarServicios()">
+                    <i class="fab fa-whatsapp"></i> CONSULTAR SERVICIOS
+                </button>
             </div>
         </div>
     </section>
@@ -91,26 +112,22 @@
             <h3 style="font-size: 0.9rem; font-weight: 900; text-transform: uppercase;">Mi Pedido</h3>
             <button onclick="toggleCart()" style="border:none; background:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
         </div>
-        
-        <div id="cart-items" style="flex: 1; overflow-y: auto; padding: 15px;">
-            </div>
-
-        <div class="cart-form-container" style="padding: 15px; background: #f9f9f9; border-top: 1px solid #eee;">
+        <div id="cart-items" style="flex: 1; overflow-y: auto; padding: 15px;"></div>
+        <div class="cart-form-container">
             <h4 style="font-size: 0.7rem; margin-bottom: 10px; color: #666; font-weight: 800;">DATOS PARA EL PEDIDO</h4>
-            <div class="cart-form" style="display: flex; flex-direction: column; gap: 8px;">
-                <input type="text" id="cust-name" placeholder="Nombre y Apellido" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.8rem; outline: none;">
-                <input type="text" id="cust-id" placeholder="Cédula de Identidad" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.8rem; outline: none;">
-                <input type="tel" id="cust-phone" placeholder="Teléfono de contacto" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.8rem; outline: none;">
-                <textarea id="cust-address" placeholder="Dirección exacta de entrega" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.8rem; height: 60px; resize: none; outline: none;"></textarea>
+            <div class="cart-form">
+                <input type="text" id="cust-name" placeholder="Nombre y Apellido">
+                <input type="text" id="cust-id" placeholder="Cédula de Identidad">
+                <input type="tel" id="cust-phone" placeholder="Teléfono de contacto">
+                <textarea id="cust-address" placeholder="Dirección" style="height: 60px; resize: none;"></textarea>
             </div>
         </div>
-
         <div style="padding: 20px; border-top: 1px solid #ddd;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 900;">
                 <span>Total:</span>
                 <span>$<span id="cart-total-value">0.00</span></span>
             </div>
-            <button id="btn-finalize" class="btn-finalize disabled" onclick="processOrder()" disabled style="width:100%; padding:15px; border:none; border-radius:8px; font-weight:900; cursor:pointer; background:var(--primary); color:white; display:flex; justify-content:center; align-items:center; gap:10px;">
+            <button id="btn-finalize" class="btn-finalize disabled" onclick="processOrder()" disabled>
                 <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
             </button>
         </div>
