@@ -1,155 +1,267 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>el izquierdo c.a | Soporte, Mantenimiento e Instalación</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <header class="main-header">
-        <nav class="navbar">
-            <div class="brand">el izquierdo c.a</div>
-            <ul class="nav-links">
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#catalogo">Catálogo</a></li>
-                <li><a href="#servicios">Servicios</a></li>
-            </ul>
-            <div class="nav-tools">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Buscar producto...">
-                </div>
-                <div class="cart-trigger" onclick="toggleCart()">
-                    <i class="fas fa-shopping-basket"></i>
-                    <span id="cart-count">0</span>
-                </div>
-            </div>
-        </nav>
+      <nav class="navbar">
+        <div class="brand">el izquierdo c.a</div>
+        <ul class="nav-links">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#catalogo">Catálogo</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+        </ul>
+        <div class="nav-tools">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Buscar producto..."
+            />
+          </div>
+          <div class="cart-trigger" onclick="toggleCart()">
+            <i class="fas fa-shopping-basket"></i>
+            <span id="cart-count">0</span>
+          </div>
+        </div>
+      </nav>
     </header>
 
     <section id="inicio" class="hero-section">
-        <div class="marquee-wall">
-            <div class="marquee-row">
-                <div class="marquee-content">
-                    <span>HIKVISION • DAHUA • UBIQUITI • TP-LINK • INTEL • WESTERN DIGITAL •</span>
-                    <span>HIKVISION • DAHUA • UBIQUITI • TP-LINK • INTEL • WESTERN DIGITAL •</span>
-                </div>
-            </div>
-            <div class="marquee-row marquee-right">
-                <div class="marquee-content">
-                    <span>CISCO • SEAGATE • EPSON • HP • DELL • LOGITECH • CANON •</span>
-                    <span>CISCO • SEAGATE • EPSON • HP • DELL • LOGITECH • CANON •</span>
-                </div>
-            </div>
-            <div class="marquee-row">
-                <div class="marquee-content">
-                    <span>ZKTeco • HEYI • PARADOX • DSC • JFL ALARMES • ALHUA •</span>
-                    <span>ZKTeco • HEYI • PARADOX • DSC • JFL ALARMES • ALHUA •</span>
-                </div>
-            </div>
-            <div class="marquee-row marquee-right">
-                <div class="marquee-content">
-                    <span>MIKROTIK • TENDA • MERCUSYS • KINGSTON • CRUCIAL • SANDISK •</span>
-                    <span>MIKROTIK • TENDA • MERCUSYS • KINGSTON • CRUCIAL • SANDISK •</span>
-                </div>
-            </div>
-            <div class="marquee-row">
-                <div class="marquee-content">
-                    <span>EL IZQUIERDO C.A • CALIDAD • SEGURIDAD • SOPORTE • TECNOLOGÍA •</span>
-                    <span>EL IZQUIERDO C.A • CALIDAD • SEGURIDAD • SOPORTE • TECNOLOGÍA •</span>
-                </div>
-            </div>
+      <div class="marquee-wall">
+        <div class="marquee-row">
+          <div class="marquee-content">
+            <span
+              >HIKVISION • DAHUA • UBIQUITI • TP-LINK • INTEL • WESTERN DIGITAL
+              •</span
+            >
+            <span
+              >HIKVISION • DAHUA • UBIQUITI • TP-LINK • INTEL • WESTERN DIGITAL
+              •</span
+            >
+          </div>
         </div>
-        <div class="hero-content">
-            <h1>Soluciones Tecnológicas</h1>
-            <p>Venta, Instalación y Soporte Técnico Especializado</p>
-            <a href="#catalogo" class="btn-cta">Explorar Catálogo</a>
+        <div class="marquee-row marquee-right">
+          <div class="marquee-content">
+            <span
+              >CISCO • SEAGATE • EPSON • HP • DELL • LOGITECH • CANON •</span
+            >
+            <span
+              >CISCO • SEAGATE • EPSON • HP • DELL • LOGITECH • CANON •</span
+            >
+          </div>
         </div>
+        <div class="marquee-row">
+          <div class="marquee-content">
+            <span>ZKTeco • HEYI • PARADOX • DSC • JFL ALARMES • ALHUA •</span>
+            <span>ZKTeco • HEYI • PARADOX • DSC • JFL ALARMES • ALHUA •</span>
+          </div>
+        </div>
+        <div class="marquee-row marquee-right">
+          <div class="marquee-content">
+            <span
+              >MIKROTIK • TENDA • MERCUSYS • KINGSTON • CRUCIAL • SANDISK
+              •</span
+            >
+            <span
+              >MIKROTIK • TENDA • MERCUSYS • KINGSTON • CRUCIAL • SANDISK
+              •</span
+            >
+          </div>
+        </div>
+        <div class="marquee-row">
+          <div class="marquee-content">
+            <span
+              >EL IZQUIERDO C.A • CALIDAD • SEGURIDAD • SOPORTE • TECNOLOGÍA
+              •</span
+            >
+            <span
+              >EL IZQUIERDO C.A • CALIDAD • SEGURIDAD • SOPORTE • TECNOLOGÍA
+              •</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="hero-content">
+        <h1>Soluciones Tecnológicas</h1>
+        <p>Venta, Instalación y Soporte Técnico Especializado</p>
+        <a href="#catalogo" class="btn-cta">Explorar Catálogo</a>
+      </div>
     </section>
 
     <section id="catalogo" class="catalog-section">
-        <div class="container">
-            <h2 class="section-title">Nuestro Catálogo</h2>
-            <div id="loader" style="text-align: center; padding: 20px; font-weight: 800; color: #d4af37;">Cargando inventario...</div>
-            <div id="product-grid" class="grid-layout"></div>
-            <div id="pagination-controls" class="pagination-container"></div>
+      <div class="container">
+        <h2 class="section-title">Nuestro Catálogo</h2>
+        <div
+          id="loader"
+          style="
+            text-align: center;
+            padding: 20px;
+            font-weight: 800;
+            color: #d4af37;
+          "
+        >
+          Cargando inventario...
         </div>
+        <div id="product-grid" class="grid-layout"></div>
+        <div id="pagination-controls" class="pagination-container"></div>
+      </div>
     </section>
 
     <section id="servicios" class="services-section">
-        <div class="container">
-            <h2 class="section-title">Servicios Profesionales</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <i class="fas fa-tools service-icon"></i>
-                    <h3>Instalación</h3>
-                    <p>Configuración experta de sistemas de seguridad, redes y equipos tecnológicos.</p>
-                </div>
-                <div class="service-card">
-                    <i class="fas fa-headset service-icon"></i>
-                    <h3>Soporte</h3>
-                    <p>Asistencia técnica especializada y remota para sus equipos.</p>
-                </div>
-                <div class="service-card">
-                    <i class="fas fa-sync-alt service-icon"></i>
-                    <h3>Mantenimiento</h3>
-                    <p>Planes preventivos para prolongar la vida útil de su inversión.</p>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 40px;">
-                <button class="btn-servicios" onclick="consultarServicios()">
-                    <i class="fab fa-whatsapp"></i> CONSULTAR SERVICIOS
-                </button>
-            </div>
+      <div class="container">
+        <h2 class="section-title">Servicios Profesionales</h2>
+        <div class="services-grid">
+          <div class="service-card">
+            <i class="fas fa-tools service-icon"></i>
+            <h3>Instalación</h3>
+            <p>
+              Configuración experta de sistemas de seguridad, redes y equipos
+              tecnológicos.
+            </p>
+          </div>
+          <div class="service-card">
+            <i class="fas fa-headset service-icon"></i>
+            <h3>Soporte</h3>
+            <p>Asistencia técnica especializada y remota para sus equipos.</p>
+          </div>
+          <div class="service-card">
+            <i class="fas fa-sync-alt service-icon"></i>
+            <h3>Mantenimiento</h3>
+            <p>
+              Planes preventivos para prolongar la vida útil de su inversión.
+            </p>
+          </div>
         </div>
+        <div style="text-align: center; margin-top: 40px">
+          <button class="btn-servicios" onclick="consultarServicios()">
+            <i class="fab fa-whatsapp"></i> CONSULTAR SERVICIOS
+          </button>
+        </div>
+      </div>
     </section>
 
     <div id="cart-panel" class="cart-panel">
-        <div style="padding: 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="font-size: 0.9rem; font-weight: 900; text-transform: uppercase;">Mi Pedido</h3>
-            <button onclick="toggleCart()" style="border:none; background:none; font-size: 1.5rem; cursor:pointer;">&times;</button>
+      <div
+        style="
+          padding: 20px;
+          border-bottom: 1px solid #ddd;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <h3
+          style="font-size: 0.9rem; font-weight: 900; text-transform: uppercase"
+        >
+          Mi Pedido
+        </h3>
+        <button
+          onclick="toggleCart()"
+          style="
+            border: none;
+            background: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+          "
+        >
+          &times;
+        </button>
+      </div>
+      <div
+        id="cart-items"
+        style="flex: 1; overflow-y: auto; padding: 15px"
+      ></div>
+      <div class="cart-form-container">
+        <h4
+          style="
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+            color: #666;
+            font-weight: 800;
+          "
+        >
+          DATOS PARA EL PEDIDO
+        </h4>
+        <div class="cart-form">
+          <input type="text" id="cust-name" placeholder="Nombre y Apellido" />
+          <input type="text" id="cust-id" placeholder="Cédula de Identidad" />
+          <input
+            type="tel"
+            id="cust-phone"
+            placeholder="Teléfono de contacto"
+          />
+          <textarea
+            id="cust-address"
+            placeholder="Dirección"
+            style="height: 60px; resize: none"
+          ></textarea>
         </div>
-        <div id="cart-items" style="flex: 1; overflow-y: auto; padding: 15px;"></div>
-        <div class="cart-form-container">
-            <h4 style="font-size: 0.7rem; margin-bottom: 10px; color: #666; font-weight: 800;">DATOS PARA EL PEDIDO</h4>
-            <div class="cart-form">
-                <input type="text" id="cust-name" placeholder="Nombre y Apellido">
-                <input type="text" id="cust-id" placeholder="Cédula de Identidad">
-                <input type="tel" id="cust-phone" placeholder="Teléfono de contacto">
-                <textarea id="cust-address" placeholder="Dirección" style="height: 60px; resize: none;"></textarea>
-            </div>
+      </div>
+      <div style="padding: 20px; border-top: 1px solid #ddd">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-weight: 900;
+          "
+        >
+          <span>Total:</span>
+          <span>$<span id="cart-total-value">0.00</span></span>
         </div>
-        <div style="padding: 20px; border-top: 1px solid #ddd;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 900;">
-                <span>Total:</span>
-                <span>$<span id="cart-total-value">0.00</span></span>
-            </div>
-            <button id="btn-finalize" class="btn-finalize disabled" onclick="processOrder()" disabled>
-                <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
-            </button>
-        </div>
+        <button
+          id="btn-finalize"
+          class="btn-finalize disabled"
+          onclick="processOrder()"
+          disabled
+        >
+          <i class="fab fa-whatsapp"></i> ENVIAR PEDIDO
+        </button>
+      </div>
     </div>
 
     <a href="https://wa.me/584143126327" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-        <div class="wave"></div>
+      <i class="fab fa-whatsapp"></i>
+      <div class="wave"></div>
     </a>
 
     <footer class="main-footer">
-        <div class="container">
-            <div class="footer-brand">el izquierdo c.a</div>
-            <div class="social-links">
-                <a href="#" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://wa.me/584143126327" class="social-icon whatsapp"><i class="fab fa-whatsapp"></i></a>
-            </div>
-            <p class="copyright">© 2026 el izquierdo c.a | Todos los derechos reservados.</p>
+      <div class="container">
+        <div class="footer-brand">el izquierdo c.a</div>
+        <div class="social-links">
+          <a
+            href="https://www.instagram.com/elizquierdoca1/"
+            class="social-icon instagram"
+            ><i class="fab fa-instagram"></i
+          ></a>
+          <a
+            href="https://www.facebook.com/profile.php?id=61581909943725#"
+            class="social-icon facebook"
+            ><i class="fab fa-facebook-f"></i
+          ></a>
+          <a href="https://wa.me/584143126327" class="social-icon whatsapp"
+            ><i class="fab fa-whatsapp"></i
+          ></a>
         </div>
+        <p class="copyright">
+          © 2026 el izquierdo c.a | Todos los derechos reservados.
+        </p>
+      </div>
     </footer>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
