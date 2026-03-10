@@ -1,5 +1,5 @@
 /** * EL IZQUIERDO C.A - PRODUCCIÓN 2026
- * Versión con Agrupación Visual en Carrito, Nota de Entrega PDF e IVA 16%.
+ * Configuración: Logo a la derecha y Nombre a la izquierda (Misma línea).
  */
 
 const SHEET_ID = "1wWBUWFJRtm3MnPD6OmRYNa8tXvxjeL9sYcQvN4Mcrdg";
@@ -48,14 +48,13 @@ function updateDisplay() {
   grid.innerHTML = filteredProducts
     .slice(startIndex, startIndex + productsPerPage)
     .map((p) => {
-      const badge = p.etiqueta.length > 2 ? `<span class="badge-personalizado">${p.etiqueta}</span>` : "";
       const is3D = p.img.includes("tripo3d.ai");
       const media = is3D
         ? `<iframe src="${p.img}" style="width:100%; height:200px; border:none; border-radius:8px;"></iframe>`
         : `<img src="${p.img}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/300x200'">`;
 
       return `<div class="card">
-            <div class="card-img-container">${media}${badge}</div>
+            <div class="card-img-container">${media}</div>
             <h3>${p.nombre}</h3>
             <p>${p.desc}</p>
             <div class="price">$${p.precio.toFixed(2)}</div>
@@ -80,7 +79,6 @@ function renderPagination() {
   }
 }
 
-// GESTIÓN DEL CARRITO
 function addToCart(name, price, img) {
   cart.push({ name, price, img });
   updateCartUI();
@@ -96,49 +94,37 @@ function removeFromCart(name) {
 
 function updateCartUI() {
   const itemsDiv = document.getElementById("cart-items");
-  const count = document.getElementById("cart-count");
-  if (count) count.innerText = cart.length;
-
   if (cart.length === 0) {
     itemsDiv.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>El carrito está vacío</p>";
     document.getElementById("cart-total-value").innerText = "0.00";
     return;
   }
-
-  // Lógica de agrupación visual
-  const agrupados = {};
+  const agrupadosUI = {};
   cart.forEach(item => {
-    if (!agrupados[item.name]) {
-      agrupados[item.name] = { ...item, cantidad: 0, subtotal: 0 };
+    if (!agrupadosUI[item.name]) {
+      agrupadosUI[item.name] = { ...item, cantidad: 0, subtotal: 0 };
     }
-    agrupados[item.name].cantidad++;
-    agrupados[item.name].subtotal += item.price;
+    agrupadosUI[item.name].cantidad++;
+    agrupadosUI[item.name].subtotal += item.price;
   });
-
   let total = 0;
-  itemsDiv.innerHTML = Object.values(agrupados).map((item) => {
+  itemsDiv.innerHTML = Object.values(agrupadosUI).map((item) => {
     total += item.subtotal;
-    const thumb = item.img.includes("tripo3d.ai")
-      ? `<div style="width:40px; height:40px; background:#eee; border-radius:5px; display:flex; align-items:center; justify-content:center;"><i class="fas fa-cube" style="color:#666;"></i></div>`
-      : `<img src="${item.img}" style="width:40px; height:40px; object-fit:cover; border-radius:5px; border:1px solid #ddd;">`;
-
     return `
       <div class="cart-item-row" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; border-bottom:1px solid #f0f0f0; padding-bottom:8px;">
-          <div style="display:flex; align-items:center; gap:10px; flex:1;">
-              ${thumb}
-              <div style="font-size:0.85rem;">
-                  <b style="display:block; line-height:1.2;">(${item.cantidad}) ${item.name}</b>
-                  <span style="color:var(--primary); font-weight:bold;">$${item.subtotal.toFixed(2)}</span>
-              </div>
+          <div style="font-size:0.85rem; flex:1;">
+              <b style="display:block;">(${item.cantidad}) ${item.name}</b>
+              <span style="color:var(--primary); font-weight:bold;">$${item.subtotal.toFixed(2)}</span>
           </div>
-          <button onclick="removeFromCart('${item.name.replace(/'/g, "\\'")}')" style="color:#ff4757; border:none; background:none; cursor:pointer; font-size:1.1rem; padding:5px;">&times;</button>
+          <button onclick="removeFromCart('${item.name.replace(/'/g, "\\'")}')" style="color:#ff4757; border:none; background:none; cursor:pointer; font-size:1.1rem;">&times;</button>
       </div>`;
   }).join("");
   document.getElementById("cart-total-value").innerText = total.toFixed(2);
+  const count = document.getElementById("cart-count");
+  if (count) count.innerText = cart.length;
 }
 
-// LÓGICA DE PROCESAMIENTO (PDF Y WHATSAPP)
-function agruparCarrito() {
+function agruparParaPedido() {
   const resumen = {};
   cart.forEach((item) => {
     if (resumen[item.name]) {
@@ -154,32 +140,55 @@ function agruparCarrito() {
 async function generarNotaPDF(datos) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  const agrupados = agruparCarrito();
+  const agrupados = agruparParaPedido();
   const subtotal = parseFloat(datos.subtotal);
   const iva = subtotal * 0.16;
   const totalFinal = subtotal + iva;
 
+  const loadLogo = () => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = 'logo.png';
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+    });
+  };
+
+  const logoImg = await loadLogo();
+  
+  // --- MEMBRETE EN LA MISMA LÍNEA ---
+  if (logoImg) {
+    // Logo a la derecha (x=155, y=10)
+    doc.addImage(logoImg, 'PNG', 155, 10, 40, 40);
+  }
+
+  // Nombre a la izquierda, alineado con el centro visual del logo
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("EL IZQUIERDO C.A.", 105, 20, { align: "center" });
+  doc.setFontSize(22);
+  doc.text("EL IZQUIERDO C.A.", 20, 28); 
+  
   doc.setFontSize(10);
-  doc.text("NOTA DE ENTREGA / COTIZACIÓN", 105, 27, { align: "center" });
-
-  doc.setFontSize(9);
+  doc.text("NOTA DE ENTREGA / COTIZACIÓN", 20, 35);
   doc.setFont("helvetica", "normal");
-  doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 40);
-  doc.text(`Cliente: ${datos.cliente}`, 20, 46);
-  doc.text(`Cédula/RIF: ${datos.cedula}`, 20, 52);
-  doc.line(20, 58, 190, 58);
+  doc.setFontSize(8);
+  doc.text("Venta, Instalación y Soporte Técnico Especializado", 20, 40);
 
+  // DATOS DEL CLIENTE
+  doc.setFontSize(9);
+  doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 58);
+  doc.text(`Cliente: ${datos.cliente}`, 20, 64);
+  doc.text(`Cédula/RIF: ${datos.cedula}`, 20, 70);
+  doc.line(20, 75, 190, 75);
+
+  // TABLA
   doc.setFont("helvetica", "bold");
-  doc.text("CANT.", 20, 65);
-  doc.text("DESCRIPCIÓN", 40, 65);
-  doc.text("P. UNIT", 150, 65, { align: "right" });
-  doc.text("TOTAL", 185, 65, { align: "right" });
-  doc.line(20, 67, 190, 67);
+  doc.text("CANT.", 20, 83);
+  doc.text("DESCRIPCIÓN", 40, 83);
+  doc.text("P. UNIT", 150, 83, { align: "right" });
+  doc.text("TOTAL", 185, 83, { align: "right" });
+  doc.line(20, 85, 190, 85);
 
-  let y = 75;
+  let y = 93;
   doc.setFont("helvetica", "normal");
   for (const n in agrupados) {
     doc.text(agrupados[n].cantidad.toString(), 25, y, { align: "center" });
@@ -187,13 +196,14 @@ async function generarNotaPDF(datos) {
     doc.text(`$${agrupados[n].precio.toFixed(2)}`, 150, y, { align: "right" });
     doc.text(`$${agrupados[n].subtotal.toFixed(2)}`, 185, y, { align: "right" });
     y += 8;
-    if (y > 250) { doc.addPage(); y = 20; }
+    if (y > 260) { doc.addPage(); y = 20; }
   }
 
+  // TOTALES
   y += 10;
   doc.line(130, y, 190, y);
   y += 10;
-  doc.text("Subtotal (Base Imponible):", 130, y);
+  doc.text("Subtotal:", 130, y);
   doc.text(`$${subtotal.toFixed(2)}`, 185, y, { align: "right" });
   y += 7;
   doc.text("IVA (16%):", 130, y);
@@ -204,9 +214,10 @@ async function generarNotaPDF(datos) {
   doc.text("TOTAL A PAGAR:", 130, y);
   doc.text(`$${totalFinal.toFixed(2)}`, 185, y, { align: "right" });
 
+  // PIE
   doc.setFontSize(8);
-  doc.text("Gracias por su confianza. Este documento es una nota de entrega digital.", 105, 275, { align: "center" });
-  doc.text("Tlf: 0414-3126327 | Correo: ventaselizquierdo@gmail.com | Instagram: @elizquierdoca1", 105, 282, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.text("Tlf: 0414-3126327 | Correo: ventaselizquierdo@gmail.com", 105, 285, { align: "center" });
 
   doc.save(`Nota_${datos.cliente.replace(/\s+/g, "_")}.pdf`);
 }
@@ -224,17 +235,14 @@ function validateForm() {
   const phone = document.getElementById("cust-phone").value.trim();
   const addr = document.getElementById("cust-address").value.trim();
   const btn = document.getElementById("btn-finalize");
-
   if (name && id && phone && addr && cart.length > 0) {
     btn.disabled = false;
     btn.classList.remove("disabled");
     btn.style.opacity = "1";
-    btn.style.cursor = "pointer";
   } else {
     btn.disabled = true;
     btn.classList.add("disabled");
     btn.style.opacity = "0.5";
-    btn.style.cursor = "not-allowed";
   }
 }
 
@@ -246,7 +254,6 @@ async function processOrder() {
   const phone = document.getElementById("cust-phone").value;
   const addr = document.getElementById("cust-address").value;
   const subtotal = parseFloat(document.getElementById("cart-total-value").innerText);
-
   const iva = subtotal * 0.16;
   const totalFinal = subtotal + iva;
 
@@ -259,18 +266,14 @@ async function processOrder() {
   };
 
   await generarNotaPDF(pedidoData);
+  try { fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(pedidoData) }); } catch (e) {}
 
-  try {
-    fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(pedidoData) });
-  } catch (e) { console.error("Error en Sheets"); }
-
-  const agrupados = agruparCarrito();
+  const agrupados = agruparParaPedido();
   let msg = `Hola *el izquierdo c.a*, nuevo pedido:%0A👤 *Cliente:* ${name}%0A💳 *CI:* ${id}%0A📍 *Dir:* ${addr}%0A%0A*DETALLE:*%0A`;
   for (const n in agrupados) {
     msg += `• (${agrupados[n].cantidad}) ${n} - $${agrupados[n].subtotal.toFixed(2)}%0A`;
   }
   msg += `%0A📉 Subtotal: $${subtotal.toFixed(2)}%0A📊 IVA (16%): $${iva.toFixed(2)}%0A💰 *TOTAL: $${totalFinal.toFixed(2)}*`;
-
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
 
   setTimeout(() => {
