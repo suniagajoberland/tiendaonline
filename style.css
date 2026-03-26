@@ -152,7 +152,7 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: var(--gold); /* El dorado que definimos */
+  background: var(--gold);
   color: black;
   font-size: 0.6rem;
   padding: 4px 8px;
@@ -163,20 +163,12 @@ body {
 } 
 
 @keyframes scrollLeft {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 @keyframes scrollRight {
-  from {
-    transform: translateX(-50%);
-  }
-  to {
-    transform: translateX(0);
-  }
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
 }
 
 .hero-content {
@@ -278,6 +270,41 @@ body {
   cursor: pointer;
   margin-top: auto;
   transition: var(--transition);
+}
+
+/* PAGINACIÓN - NUEVO (CENTRADO Y EFECTOS) */
+#pagination-controls {
+  display: flex;
+  justify-content: center; /* Centrado solicitado */
+  align-items: center;
+  gap: 10px;
+  margin: 40px 0;
+  width: 100%;
+}
+#pagination-controls button {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 800;
+  color: var(--dark);
+  transition: var(--transition);
+}
+/* Efecto de pulso en página actual */
+#pagination-controls button.active {
+  background: var(--dark);
+  color: var(--gold);
+  border-color: var(--dark);
+  animation: active-page-pulse 2s infinite;
+}
+/* Efecto de pulso al click (se activa vía JS agregando la clase) */
+.nav-click-pulse {
+  animation: nav-pulse 0.3s ease-out;
+}
+#pagination-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 /* SERVICIOS - Restablecido */
@@ -410,16 +437,6 @@ body {
   z-index: -1;
   animation: pulse 2s infinite;
 }
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.8);
-    opacity: 0;
-  }
-}
 
 /* FOOTER - Restablecido */
 .main-footer {
@@ -453,15 +470,10 @@ body {
   text-decoration: none;
   transition: var(--transition);
 }
-.instagram {
-  background: var(--insta);
-}
-.facebook {
-  background: #1877f2;
-}
-.whatsapp {
-  background: var(--primary);
-}
+.instagram { background: var(--insta); }
+.facebook { background: #1877f2; }
+.whatsapp { background: var(--primary); }
+
 .copyright {
   font-size: 0.7rem;
   opacity: 0.4;
@@ -470,17 +482,36 @@ body {
 
 /* RESPONSIVO */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-  }
-  .cart-panel {
-    width: 100%;
-    right: -100%;
-  }
-  .brand {
-    font-size: 0.6rem;
-  }
-  .grid-layout {
-    grid-template-columns: 1fr;
-  }
+  .nav-links { display: none; }
+  .cart-panel { width: 100%; right: -100%; }
+  .brand { font-size: 0.6rem; }
+  .grid-layout { grid-template-columns: 1fr; }
+}
+
+/* ANIMACIONES */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+@keyframes cart-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+/* Animación de pulso para página activa */
+@keyframes active-page-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+/* Animación de pulso al click en nav */
+@keyframes nav-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); background: #eee; }
+  100% { transform: scale(1); }
+}
+
+.cart-icon-pulse {
+  animation: cart-pulse 0.4s ease-in-out;
+  color: #10b981 !important;
 }
