@@ -8,8 +8,9 @@
 // --- 0. CONFIGURACIÓN Y ESTILOS ---
 const SHEET_ID = "1wWBUWFJRtm3MnPD6OmRYNa8tXvxjeL9sYcQvN4Mcrdg";
 const WHATSAPP_NUMBER = "584226382165";
-const PROVEEDORES = ["Proveedor_A", "Proveedor_B"];
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzci8hW9-Gph7qh58-5wmKId49dslME0RybbGHjav2TzHA3aEsJCiStxOr5d_jeMxpJeg/exec";
+const PROVEEDORES = ["Proveedor_A", "maferLG"];
+const WEB_APP_URL =
+  "https://script.google.com/macros/s/AKfycbzci8hW9-Gph7qh58-5wmKId49dslME0RybbGHjav2TzHA3aEsJCiStxOr5d_jeMxpJeg/exec";
 
 const style = document.createElement("style");
 style.innerHTML = `
@@ -65,103 +66,127 @@ const productsPerPage = 12;
 
 // --- 1. INICIALIZACIÓN Y CARGA ---
 async function init() {
-    const loader = document.getElementById("loader");
-    allProducts = [];
-    for (const prov of PROVEEDORES) {
-        const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(prov)}`;
-        try {
-            const res = await fetch(URL);
-            const csvText = await res.text();
-            const rows = csvText.trim().split(/\r?\n/).slice(1);
-            rows.forEach((row) => {
-                const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if (cols.length >= 3) {
-                    const nombre = cols[0].replace(/^"|"$/g, "").trim();
-                    if (!nombre) return;
+  const loader = document.getElementById("loader");
+  allProducts = [];
+  for (const prov of PROVEEDORES) {
+    const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(prov)}`;
+    try {
+      const res = await fetch(URL);
+      const csvText = await res.text();
+      const rows = csvText.trim().split(/\r?\n/).slice(1);
+      rows.forEach((row) => {
+        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        if (cols.length >= 3) {
+          const nombre = cols[0].replace(/^"|"$/g, "").trim();
+          if (!nombre) return;
 
-                    const precioUSD = parseFloat(cols[2]?.replace(/^"|"$/g, "").replace(/\./g, "").replace(",", ".").trim()) || 0;
-                    const precioBs = cols[8] ? parseFloat(cols[8].replace(/^"|"$/g, "").replace(/\./g, "").replace(",", ".").trim()) : (precioUSD * 70);
-                    const etiqueta = cols[4] ? cols[4].replace(/^"|"$/g, "").trim() : "";
-                    
-                    allProducts.push({
-                        nombre,
-                        desc: cols[1] ? cols[1].replace(/^"|"$/g, "").trim() : "Sin descripción",
-                        precioBase: precioUSD,
-                        precioBaseBs: precioBs,
-                        img: cols[3] ? cols[3].replace(/^"|"$/g, "").trim() : "https://via.placeholder.com/300x200",
-                        prov: prov,
-                        tag: etiqueta
-                    });
-                }
-            });
-        } catch (e) { console.error("Error cargando proveedor " + prov, e); }
+          const precioUSD =
+            parseFloat(
+              cols[2]
+                ?.replace(/^"|"$/g, "")
+                .replace(/\./g, "")
+                .replace(",", ".")
+                .trim(),
+            ) || 0;
+          const precioBs = cols[8]
+            ? parseFloat(
+                cols[8]
+                  .replace(/^"|"$/g, "")
+                  .replace(/\./g, "")
+                  .replace(",", ".")
+                  .trim(),
+              )
+            : precioUSD * 70;
+          const etiqueta = cols[4] ? cols[4].replace(/^"|"$/g, "").trim() : "";
+
+          allProducts.push({
+            nombre,
+            desc: cols[1]
+              ? cols[1].replace(/^"|"$/g, "").trim()
+              : "Sin descripción",
+            precioBase: precioUSD,
+            precioBaseBs: precioBs,
+            img: cols[3]
+              ? cols[3].replace(/^"|"$/g, "").trim()
+              : "https://via.placeholder.com/300x200",
+            prov: prov,
+            tag: etiqueta,
+          });
+        }
+      });
+    } catch (e) {
+      console.error("Error cargando proveedor " + prov, e);
     }
-    if (loader) loader.style.display = "none";
-    filteredProducts = [...allProducts];
-    updateDisplay();
-    setupEventListeners();
-    validateForm();
+  }
+  if (loader) loader.style.display = "none";
+  filteredProducts = [...allProducts];
+  updateDisplay();
+  setupEventListeners();
+  validateForm();
 }
 
 // --- 2. GESTIÓN DEL CARRITO ---
 function addToCart(btn, name, desc, baseUsd, baseBs, prov) {
-    const existing = cart.find(i => i.name === name);
-    if (existing) {
-        existing.qty++;
-    } else {
-        cart.push({ name, desc, baseUsd, baseBs, qty: 1, prov });
-    }
+  const existing = cart.find((i) => i.name === name);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ name, desc, baseUsd, baseBs, qty: 1, prov });
+  }
 
-    if (btn) {
-        const originalText = btn.innerText;
-        btn.innerText = "¡Agregado!";
-        btn.style.background = "#25D366";
-        btn.disabled = true;
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.background = "#004080";
-            btn.disabled = false;
-        }, 1000);
-    }
+  if (btn) {
+    const originalText = btn.innerText;
+    btn.innerText = "¡Agregado!";
+    btn.style.background = "#25D366";
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerText = originalText;
+      btn.style.background = "#004080";
+      btn.disabled = false;
+    }, 1000);
+  }
 
-    updateCartUI();
-    validateForm();
-    animateBadge();
+  updateCartUI();
+  validateForm();
+  animateBadge();
 }
 
 function updateQty(name, delta) {
-    const item = cart.find(i => i.name === name);
-    if (item) {
-        item.qty += delta;
-        if (item.qty <= 0) deleteFromCart(name);
-    }
-    updateCartUI();
-    validateForm();
+  const item = cart.find((i) => i.name === name);
+  if (item) {
+    item.qty += delta;
+    if (item.qty <= 0) deleteFromCart(name);
+  }
+  updateCartUI();
+  validateForm();
 }
 
 function deleteFromCart(name) {
-    cart = cart.filter(i => i.name !== name);
-    updateCartUI();
-    validateForm();
+  cart = cart.filter((i) => i.name !== name);
+  updateCartUI();
+  validateForm();
 }
 
 function updateCartUI() {
-    const itemsDiv = document.getElementById("cart-items");
-    const totalUsdDisp = document.getElementById("cart-total-value");
-    const totalBsDisp = document.getElementById("cart-total-bs-value");
-    const cartCount = document.getElementById("cart-count");
-    
-    let sumUSD = 0, sumBS = 0, totalQty = 0;
-    
-    if (itemsDiv) {
-        itemsDiv.innerHTML = cart.map(item => {
-            const subUSD = item.qty * item.baseUsd;
-            const subBS = item.qty * item.baseBs;
-            sumUSD += subUSD;
-            sumBS += subBS;
-            totalQty += item.qty;
+  const itemsDiv = document.getElementById("cart-items");
+  const totalUsdDisp = document.getElementById("cart-total-value");
+  const totalBsDisp = document.getElementById("cart-total-bs-value");
+  const cartCount = document.getElementById("cart-count");
 
-            return `
+  let sumUSD = 0,
+    sumBS = 0,
+    totalQty = 0;
+
+  if (itemsDiv) {
+    itemsDiv.innerHTML = cart
+      .map((item) => {
+        const subUSD = item.qty * item.baseUsd;
+        const subBS = item.qty * item.baseBs;
+        sumUSD += subUSD;
+        sumBS += subBS;
+        totalQty += item.qty;
+
+        return `
             <div style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div style="flex:1;">
@@ -179,154 +204,181 @@ function updateCartUI() {
                     <button class="btn-del" style="margin-left:auto;" onclick="deleteFromCart('${item.name}')">Eliminar</button>
                 </div>
             </div>`;
-        }).join("");
-    }
-    
-    if (totalUsdDisp) totalUsdDisp.innerText = sumUSD.toFixed(2);
-    if (totalBsDisp) totalBsDisp.innerText = sumBS.toLocaleString("es-VE", { minimumFractionDigits: 2 });
-    if (cartCount) cartCount.innerText = totalQty;
+      })
+      .join("");
+  }
+
+  if (totalUsdDisp) totalUsdDisp.innerText = sumUSD.toFixed(2);
+  if (totalBsDisp)
+    totalBsDisp.innerText = sumBS.toLocaleString("es-VE", {
+      minimumFractionDigits: 2,
+    });
+  if (cartCount) cartCount.innerText = totalQty;
 }
 
 // --- 3. WHATSAPP Y PDF ---
 async function processOrder() {
-    if (!validateForm()) {
-        alert("Por favor, rellene todos los campos correctamente.");
-        return;
-    }
+  if (!validateForm()) {
+    alert("Por favor, rellene todos los campos correctamente.");
+    return;
+  }
 
-    let totalUsdNum = 0;
-    let totalBsNum = 0;
-    cart.forEach(item => {
-        totalUsdNum += (item.qty * item.baseUsd);
-        totalBsNum += (item.qty * item.baseBs);
+  let totalUsdNum = 0;
+  let totalBsNum = 0;
+  cart.forEach((item) => {
+    totalUsdNum += item.qty * item.baseUsd;
+    totalBsNum += item.qty * item.baseBs;
+  });
+
+  const subtotal = totalUsdNum / 1.16;
+  const iva = totalUsdNum - subtotal;
+  const provUnicos = [...new Set(cart.map((i) => i.prov))].join(", ");
+
+  const payload = {
+    cliente: document.getElementById("cust-name").value.trim(),
+    cedula: document.getElementById("cust-id").value.trim(),
+    telefono: document.getElementById("cust-phone").value.trim(),
+    direccion: document.getElementById("cust-address").value.trim(),
+    productos: cart.map((i) => `${i.qty}x ${i.name}`).join(", "),
+    proveedores: provUnicos,
+    subtotal: subtotal.toFixed(2),
+    iva: iva.toFixed(2),
+    total: totalUsdNum.toFixed(2),
+    totalBs: totalBsNum.toFixed(2),
+  };
+
+  fetch(WEB_APP_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(payload),
+  });
+
+  const dataForPdf = {
+    ...payload,
+    totalBs: totalBsNum.toLocaleString("es-VE", { minimumFractionDigits: 2 }),
+  };
+  generatePDF(dataForPdf);
+
+  let msg = `*NUEVO PEDIDO - IT SOPORTE*%0A%0A`;
+  msg += `👤 *Cliente:* ${payload.cliente}%0A`;
+  msg += `🆔 *C.I/RIF:* ${payload.cedula}%0A`;
+  msg += `📞 *Tlf:* ${payload.telefono}%0A`;
+  msg += `📍 *Dirección:* ${payload.direccion}%0A%0A`;
+  msg += `*PRODUCTOS:*%0A`;
+  cart.forEach(
+    (i) =>
+      (msg += `- ${i.qty}x ${i.name} ($${(i.qty * i.baseUsd).toFixed(2)})%0A`),
+  );
+  msg += `%0A💰 *TOTAL A PAGAR:*%0A`;
+  msg += `💵 *Dólares:* $${payload.total}%0A`;
+  msg += `🇻🇪 *Bolívares:* ${dataForPdf.totalBs} Bs%0A%0A`;
+  msg += `_He descargado mi orden en PDF._`;
+
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
+
+  setTimeout(() => {
+    cart = [];
+    ["cust-name", "cust-id", "cust-phone", "cust-address"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
     });
-
-    const subtotal = totalUsdNum / 1.16;
-    const iva = totalUsdNum - subtotal;
-    const provUnicos = [...new Set(cart.map(i => i.prov))].join(", ");
-
-    const payload = {
-        cliente: document.getElementById("cust-name").value.trim(),
-        cedula: document.getElementById("cust-id").value.trim(),
-        telefono: document.getElementById("cust-phone").value.trim(),
-        direccion: document.getElementById("cust-address").value.trim(),
-        productos: cart.map(i => `${i.qty}x ${i.name}`).join(", "),
-        proveedores: provUnicos,
-        subtotal: subtotal.toFixed(2),
-        iva: iva.toFixed(2),
-        total: totalUsdNum.toFixed(2),
-        totalBs: totalBsNum.toFixed(2)
-    };
-
-    fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
-
-    const dataForPdf = {
-        ...payload,
-        totalBs: totalBsNum.toLocaleString("es-VE", { minimumFractionDigits: 2 })
-    };
-    generatePDF(dataForPdf);
-
-    let msg = `*NUEVO PEDIDO - IT SOPORTE*%0A%0A`;
-    msg += `👤 *Cliente:* ${payload.cliente}%0A`;
-    msg += `🆔 *C.I/RIF:* ${payload.cedula}%0A`;
-    msg += `📞 *Tlf:* ${payload.telefono}%0A`;
-    msg += `📍 *Dirección:* ${payload.direccion}%0A%0A`;
-    msg += `*PRODUCTOS:*%0A`;
-    cart.forEach(i => msg += `- ${i.qty}x ${i.name} ($${(i.qty * i.baseUsd).toFixed(2)})%0A`);
-    msg += `%0A💰 *TOTAL A PAGAR:*%0A`;
-    msg += `💵 *Dólares:* $${payload.total}%0A`;
-    msg += `🇻🇪 *Bolívares:* ${dataForPdf.totalBs} Bs%0A%0A`;
-    msg += `_He descargado mi orden en PDF._`;
-
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
-
-    setTimeout(() => {
-        cart = [];
-        ["cust-name", "cust-id", "cust-phone", "cust-address"].forEach(id => { 
-            const el = document.getElementById(id);
-            if(el) el.value = ""; 
-        });
-        updateCartUI();
-        validateForm();
-        toggleCart();
-    }, 1000);
+    updateCartUI();
+    validateForm();
+    toggleCart();
+  }, 1000);
 }
 
 function generatePDF(data) {
-    const { jsPDF } = window.jspdf || {};
-    if (!jsPDF) return;
-    const doc = new jsPDF();
-    
-    doc.setFontSize(18); doc.setTextColor(0, 64, 128);
-    doc.text("IT SOPORTE - ORDEN DE COMPRA", 105, 20, { align: "center" });
-    
-    doc.setFontSize(11); doc.setTextColor(50);
-    doc.setFont(undefined, 'bold');
-    doc.text("DATOS DEL CLIENTE:", 20, 40);
-    doc.setFont(undefined, 'normal');
-    doc.text(`Cliente: ${data.cliente}`, 20, 47);
-    doc.text(`C.I / RIF: ${data.cedula}`, 20, 54);
-    doc.text(`Teléfono: ${data.telefono}`, 20, 61);
-    doc.text(`Dirección: ${data.direccion}`, 20, 68);
-    
-    doc.line(20, 72, 190, 72);
-    
-    let y = 82;
+  const { jsPDF } = window.jspdf || {};
+  if (!jsPDF) return;
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.setTextColor(0, 64, 128);
+  doc.text("IT SOPORTE - ORDEN DE COMPRA", 105, 20, { align: "center" });
+
+  doc.setFontSize(11);
+  doc.setTextColor(50);
+  doc.setFont(undefined, "bold");
+  doc.text("DATOS DEL CLIENTE:", 20, 40);
+  doc.setFont(undefined, "normal");
+  doc.text(`Cliente: ${data.cliente}`, 20, 47);
+  doc.text(`C.I / RIF: ${data.cedula}`, 20, 54);
+  doc.text(`Teléfono: ${data.telefono}`, 20, 61);
+  doc.text(`Dirección: ${data.direccion}`, 20, 68);
+
+  doc.line(20, 72, 190, 72);
+
+  let y = 82;
+  doc.setFont(undefined, "bold");
+  doc.text("Producto / Descripción", 20, y);
+  doc.text("Cant.", 110, y);
+  doc.text("Total ($)", 140, y);
+  doc.text("Total (Bs)", 190, y, { align: "right" });
+
+  doc.setFont(undefined, "normal");
+  y += 8;
+  cart.forEach((item) => {
+    const subUSD = item.qty * item.baseUsd;
+    const subBS = item.qty * item.baseBs;
+
+    // Nombre del producto
     doc.setFont(undefined, "bold");
-    doc.text("Producto / Descripción", 20, y);
-    doc.text("Cant.", 110, y);
-    doc.text("Total ($)", 140, y);
-    doc.text("Total (Bs)", 190, y, { align: "right" });
-    
+    doc.text(item.name.substring(0, 45), 20, y);
     doc.setFont(undefined, "normal");
-    y += 8;
-    cart.forEach(item => {
-        const subUSD = item.qty * item.baseUsd;
-        const subBS = item.qty * item.baseBs;
-        
-        // Nombre del producto
-        doc.setFont(undefined, "bold");
-        doc.text(item.name.substring(0, 45), 20, y);
-        doc.setFont(undefined, "normal");
-        
-        doc.text(item.qty.toString(), 112, y);
-        doc.text(`$${subUSD.toFixed(2)}`, 140, y);
-        doc.text(`${subBS.toLocaleString("es-VE", {minimumFractionDigits:2})}`, 190, y, { align: "right" });
-        
-        y += 5;
-        // Descripción del producto (en gris y más pequeña)
-        doc.setFontSize(9); doc.setTextColor(100);
-        const splitDesc = doc.splitTextToSize(item.desc, 80);
-        doc.text(splitDesc, 20, y);
-        doc.setFontSize(11); doc.setTextColor(50);
-        
-        y += (splitDesc.length * 5) + 2;
-        if (y > 270) { doc.addPage(); y = 20; }
-    });
-    
-    y += 5; doc.line(110, y, 190, y);
-    y += 10; doc.setFont(undefined, "bold");
-    doc.text("TOTAL USD:", 110, y); doc.text(`$${data.total}`, 190, y, { align: "right" });
-    
-    y += 7;
-    doc.text("TOTAL BS:", 110, y); 
-    doc.text(`${data.totalBs} Bs`, 190, y, { align: "right" });
-    
-    doc.save(`Pedido_ITSoporte_${data.cliente.replace(/\s+/g, '_')}.pdf`);
+
+    doc.text(item.qty.toString(), 112, y);
+    doc.text(`$${subUSD.toFixed(2)}`, 140, y);
+    doc.text(
+      `${subBS.toLocaleString("es-VE", { minimumFractionDigits: 2 })}`,
+      190,
+      y,
+      { align: "right" },
+    );
+
+    y += 5;
+    // Descripción del producto (en gris y más pequeña)
+    doc.setFontSize(9);
+    doc.setTextColor(100);
+    const splitDesc = doc.splitTextToSize(item.desc, 80);
+    doc.text(splitDesc, 20, y);
+    doc.setFontSize(11);
+    doc.setTextColor(50);
+
+    y += splitDesc.length * 5 + 2;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  });
+
+  y += 5;
+  doc.line(110, y, 190, y);
+  y += 10;
+  doc.setFont(undefined, "bold");
+  doc.text("TOTAL USD:", 110, y);
+  doc.text(`$${data.total}`, 190, y, { align: "right" });
+
+  y += 7;
+  doc.text("TOTAL BS:", 110, y);
+  doc.text(`${data.totalBs} Bs`, 190, y, { align: "right" });
+
+  doc.save(`Pedido_ITSoporte_${data.cliente.replace(/\s+/g, "_")}.pdf`);
 }
 
 // --- 4. INTERFAZ Y VALIDACIÓN ---
 function updateDisplay() {
-    const grid = document.getElementById("product-grid");
-    if (!grid) return;
-    const start = (currentPage - 1) * productsPerPage;
-    const items = filteredProducts.slice(start, start + productsPerPage);
-    
-    grid.innerHTML = items.map((p) => {
-        const nEsc = p.nombre.replace(/'/g, "\\'");
-        const dEsc = p.desc.replace(/'/g, "\\'");
-        const provEsc = p.prov.replace(/'/g, "\\'");
-        return `
+  const grid = document.getElementById("product-grid");
+  if (!grid) return;
+  const start = (currentPage - 1) * productsPerPage;
+  const items = filteredProducts.slice(start, start + productsPerPage);
+
+  grid.innerHTML = items
+    .map((p) => {
+      const nEsc = p.nombre.replace(/'/g, "\\'");
+      const dEsc = p.desc.replace(/'/g, "\\'");
+      const provEsc = p.prov.replace(/'/g, "\\'");
+      return `
         <div class="product-card" style="display:flex; flex-direction:column; height:100%; border:1px solid #eee; border-radius:15px; padding:15px; background:#fff; position:relative;">
             <div class="img-container">
                 ${p.tag ? `<span class="product-tag">${p.tag}</span>` : ""}
@@ -342,89 +394,105 @@ function updateDisplay() {
                 Añadir al Carrito
             </button>
         </div>`;
-    }).join("");
-    renderPagination();
+    })
+    .join("");
+  renderPagination();
 }
 
 function validateForm() {
-    const nameEl = document.getElementById("cust-name");
-    const idEl = document.getElementById("cust-id");
-    const phoneEl = document.getElementById("cust-phone");
-    const addressEl = document.getElementById("cust-address");
-    const btn = document.getElementById("btn-finalize");
+  const nameEl = document.getElementById("cust-name");
+  const idEl = document.getElementById("cust-id");
+  const phoneEl = document.getElementById("cust-phone");
+  const addressEl = document.getElementById("cust-address");
+  const btn = document.getElementById("btn-finalize");
 
-    if (!nameEl || !idEl || !phoneEl || !addressEl) return false;
+  if (!nameEl || !idEl || !phoneEl || !addressEl) return false;
 
-    const isNameValid = nameEl.value.trim().length >= 3;
-    const isIdValid = idEl.value.trim().length >= 6;
-    const isPhoneValid = /^[0-9+]{10,15}$/.test(phoneEl.value.trim());
-    const isAddressValid = addressEl.value.trim().length >= 5;
-    const hasItems = cart.length > 0;
+  const isNameValid = nameEl.value.trim().length >= 3;
+  const isIdValid = idEl.value.trim().length >= 6;
+  const isPhoneValid = /^[0-9+]{10,15}$/.test(phoneEl.value.trim());
+  const isAddressValid = addressEl.value.trim().length >= 5;
+  const hasItems = cart.length > 0;
 
-    const allValid = isNameValid && isIdValid && isPhoneValid && isAddressValid && hasItems;
+  const allValid =
+    isNameValid && isIdValid && isPhoneValid && isAddressValid && hasItems;
 
-    if (nameEl.value.length > 0) nameEl.classList.toggle("input-error", !isNameValid);
-    if (idEl.value.length > 0) idEl.classList.toggle("input-error", !isIdValid);
-    if (phoneEl.value.length > 0) phoneEl.classList.toggle("input-error", !isPhoneValid);
-    if (addressEl.value.length > 0) addressEl.classList.toggle("input-error", !isAddressValid);
+  if (nameEl.value.length > 0)
+    nameEl.classList.toggle("input-error", !isNameValid);
+  if (idEl.value.length > 0) idEl.classList.toggle("input-error", !isIdValid);
+  if (phoneEl.value.length > 0)
+    phoneEl.classList.toggle("input-error", !isPhoneValid);
+  if (addressEl.value.length > 0)
+    addressEl.classList.toggle("input-error", !isAddressValid);
 
-    if (btn) {
-        btn.disabled = !allValid;
-        btn.style.background = allValid ? "#25D366" : "#ccc";
-        btn.onclick = allValid ? processOrder : null;
-    }
+  if (btn) {
+    btn.disabled = !allValid;
+    btn.style.background = allValid ? "#25D366" : "#ccc";
+    btn.onclick = allValid ? processOrder : null;
+  }
 
-    return allValid;
+  return allValid;
 }
 
 // --- OTROS EVENTOS ---
 function renderPagination() {
-    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-    const container = document.getElementById("pagination-controls");
-    if (!container || totalPages <= 1) { if (container) container.innerHTML = ""; return; }
-    let html = `<button ${currentPage === 1 ? "disabled" : ""} onclick="changePage(${currentPage - 1})">Anterior</button>`;
-    for (let i = 1; i <= totalPages; i++) {
-        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-            html += `<button class="${i === currentPage ? "active" : ""}" onclick="changePage(${i})">${i}</button>`;
-        }
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const container = document.getElementById("pagination-controls");
+  if (!container || totalPages <= 1) {
+    if (container) container.innerHTML = "";
+    return;
+  }
+  let html = `<button ${currentPage === 1 ? "disabled" : ""} onclick="changePage(${currentPage - 1})">Anterior</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= currentPage - 1 && i <= currentPage + 1)
+    ) {
+      html += `<button class="${i === currentPage ? "active" : ""}" onclick="changePage(${i})">${i}</button>`;
     }
-    html += `<button ${currentPage === totalPages ? "disabled" : ""} onclick="changePage(${currentPage + 1})">Siguiente</button>`;
-    container.innerHTML = html;
+  }
+  html += `<button ${currentPage === totalPages ? "disabled" : ""} onclick="changePage(${currentPage + 1})">Siguiente</button>`;
+  container.innerHTML = html;
 }
 
 function changePage(page) {
-    currentPage = page;
-    updateDisplay();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  currentPage = page;
+  updateDisplay();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function setupEventListeners() {
-    const search = document.getElementById("searchInput");
-    if (search) {
-        search.addEventListener("input", (e) => {
-            const term = e.target.value.toLowerCase();
-            filteredProducts = allProducts.filter((p) => p.nombre.toLowerCase().includes(term) || p.desc.toLowerCase().includes(term));
-            currentPage = 1;
-            updateDisplay();
-        });
-    }
-    ["cust-name", "cust-id", "cust-phone", "cust-address"].forEach((id) => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener("input", validateForm);
+  const search = document.getElementById("searchInput");
+  if (search) {
+    search.addEventListener("input", (e) => {
+      const term = e.target.value.toLowerCase();
+      filteredProducts = allProducts.filter(
+        (p) =>
+          p.nombre.toLowerCase().includes(term) ||
+          p.desc.toLowerCase().includes(term),
+      );
+      currentPage = 1;
+      updateDisplay();
     });
+  }
+  ["cust-name", "cust-id", "cust-phone", "cust-address"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", validateForm);
+  });
 }
 
 function toggleCart() {
-    const panel = document.getElementById("cart-panel");
-    if (panel) panel.classList.toggle("active");
+  const panel = document.getElementById("cart-panel");
+  if (panel) panel.classList.toggle("active");
 }
 
 function animateBadge() {
-    const badge = document.getElementById("cart-count");
-    if (badge) {
-        badge.classList.add("cart-animate");
-        setTimeout(() => badge.classList.remove("cart-animate"), 400);
-    }
+  const badge = document.getElementById("cart-count");
+  if (badge) {
+    badge.classList.add("cart-animate");
+    setTimeout(() => badge.classList.remove("cart-animate"), 400);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);

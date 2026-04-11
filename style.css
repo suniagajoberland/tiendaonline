@@ -146,7 +146,7 @@ body {
 .marquee-content span {
   font-size: 20px;
   font-weight: 900;
-  color: var(--gold);
+  color: var(--white);
 }
 .badge-personalizado {
   position: absolute;
@@ -160,15 +160,23 @@ body {
   font-weight: 900;
   text-transform: uppercase;
   z-index: 5;
-} 
+}
 
 @keyframes scrollLeft {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 @keyframes scrollRight {
-  from { transform: translateX(-50%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .hero-content {
@@ -470,9 +478,15 @@ body {
   text-decoration: none;
   transition: var(--transition);
 }
-.instagram { background: var(--insta); }
-.facebook { background: #1877f2; }
-.whatsapp { background: var(--primary); }
+.instagram {
+  background: var(--insta);
+}
+.facebook {
+  background: #1877f2;
+}
+.whatsapp {
+  background: var(--primary);
+}
 
 .copyright {
   font-size: 0.7rem;
@@ -482,33 +496,70 @@ body {
 
 /* RESPONSIVO */
 @media (max-width: 768px) {
-  .nav-links { display: none; }
-  .cart-panel { width: 100%; right: -100%; }
-  .brand { font-size: 0.6rem; }
-  .grid-layout { grid-template-columns: 1fr; }
+  .nav-links {
+    display: none;
+  }
+  .cart-panel {
+    width: 100%;
+    right: -100%;
+  }
+  .brand {
+    font-size: 0.6rem;
+  }
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ANIMACIONES */
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.8); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 @keyframes cart-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 /* Animación de pulso para página activa */
 @keyframes active-page-pulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+  }
 }
 /* Animación de pulso al click en nav */
 @keyframes nav-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); background: #eee; }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    background: #eee;
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .cart-icon-pulse {
