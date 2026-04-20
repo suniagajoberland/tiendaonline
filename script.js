@@ -447,7 +447,7 @@ function renderPagination() {
     if (
       i === 1 ||
       i === totalPages ||
-      (i >= currentPage - 1 && i <= currentPage + 1)
+      (i >= currentPage - 1 && i <= currentPage + 4)
     ) {
       html += `<button class="${i === currentPage ? "active" : ""}" onclick="changePage(${i})">${i}</button>`;
     }
@@ -459,7 +459,7 @@ function renderPagination() {
 function changePage(page) {
   currentPage = page;
   updateDisplay();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 260, behavior: "smooth" });
 }
 
 function setupEventListeners() {
