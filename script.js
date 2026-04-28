@@ -8,7 +8,7 @@
 // --- 0. CONFIGURACIÓN Y ESTILOS ---
 const SHEET_ID = "1wWBUWFJRtm3MnPD6OmRYNa8tXvxjeL9sYcQvN4Mcrdg";
 const WHATSAPP_NUMBER = "584226382165";
-const PROVEEDORES = ["Proveedor_A", "maferLG"];
+const PROVEEDORES = ["Proveedor_A", "maferLG", "gorras",];
 const WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbzci8hW9-Gph7qh58-5wmKId49dslME0RybbGHjav2TzHA3aEsJCiStxOr5d_jeMxpJeg/exec";
 
