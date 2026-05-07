@@ -8,7 +8,7 @@
 // --- 0. CONFIGURACIÓN Y ESTILOS ---
 const SHEET_ID = "1wWBUWFJRtm3MnPD6OmRYNa8tXvxjeL9sYcQvN4Mcrdg";
 const WHATSAPP_NUMBER = "584226382165";
-const PROVEEDORES = ["Proveedor_A", "maferLG", "gorras",];
+const PROVEEDORES = ["Proveedor_A", "maferLG", "gorras"];
 const WEB_APP_URL =
   "https://script.google.com/macros/s/AKfycbzci8hW9-Gph7qh58-5wmKId49dslME0RybbGHjav2TzHA3aEsJCiStxOr5d_jeMxpJeg/exec";
 
@@ -80,23 +80,33 @@ async function init() {
           const nombre = cols[0].replace(/^"|"$/g, "").trim();
           if (!nombre) return;
 
-          const precioUSD =
-            parseFloat(
-              cols[2]
-                ?.replace(/^"|"$/g, "")
-                .replace(/\./g, "")
-                .replace(",", ".")
-                .trim(),
-            ) || 0;
-          const precioBs = cols[8]
-            ? parseFloat(
-                cols[8]
-                  .replace(/^"|"$/g, "")
-                  .replace(/\./g, "")
-                  .replace(",", ".")
-                  .trim(),
-              )
-            : precioUSD * 70;
+          // Conversión segura de precio USD
+          let rawUSD = cols[2] ? cols[2].replace(/^"|"$/g, "").trim() : "0";
+          // Si el formato usa punto como miles (ej: 1.200,50), quitamos el punto y cambiamos la coma por punto
+          if (rawUSD.includes(",") && rawUSD.includes(".")) {
+            rawUSD = rawUSD.replace(/\./g, "").replace(",", ".");
+          } else if (rawUSD.includes(",")) {
+            rawUSD = rawUSD.replace(",", ".");
+          }
+          const precioUSD = parseFloat(rawUSD) || 0;
+
+          // Conversión segura de precio Bs (Evita estrictamente el NaN)
+          let precioBs = 0;
+          if (cols[8]) {
+            let rawBs = cols[8].replace(/^"|"$/g, "").trim();
+            if (rawBs.includes(",") && rawBs.includes(".")) {
+              rawBs = rawBs.replace(/\./g, "").replace(",", ".");
+            } else if (rawBs.includes(",")) {
+              rawBs = rawBs.replace(",", ".");
+            }
+            precioBs = parseFloat(rawBs);
+          }
+
+          // Si el valor extraído de la columna 9 no es un número válido o es 0, calculamos con tasa de respaldo 70
+          if (isNaN(precioBs) || precioBs <= 0) {
+            precioBs = precioUSD * 70;
+          }
+
           const etiqueta = cols[4] ? cols[4].replace(/^"|"$/g, "").trim() : "";
 
           allProducts.push({
@@ -209,10 +219,12 @@ function updateCartUI() {
   }
 
   if (totalUsdDisp) totalUsdDisp.innerText = sumUSD.toFixed(2);
-  if (totalBsDisp)
-    totalBsDisp.innerText = sumBS.toLocaleString("es-VE", {
+  if (totalBsDisp) {
+    totalBsDisp.innerText = isNaN(sumBS) ? "0,00" : sumBS.toLocaleString("es-VE", {
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     });
+  }
   if (cartCount) cartCount.innerText = totalQty;
 }
 
