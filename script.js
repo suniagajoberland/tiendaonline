@@ -222,7 +222,7 @@ function updateCartUI() {
   if (totalBsDisp) {
     totalBsDisp.innerText = isNaN(sumBS)
       ? "0,00"
-      : sumBS.toLocaleString("es-VE", {
+      : sumBS.toLocaleString("de-DE", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         });
