@@ -104,7 +104,7 @@ async function init() {
 
           // Si el valor extraído de la columna 9 no es un número válido o es 0, calculamos con tasa de respaldo 70
           if (isNaN(precioBs) || precioBs <= 0) {
-            precioBs = precioUSD * 70;
+            precioBs = precioUSD * 700;
           }
 
           const etiqueta = cols[4] ? cols[4].replace(/^"|"$/g, "").trim() : "";
@@ -220,10 +220,12 @@ function updateCartUI() {
 
   if (totalUsdDisp) totalUsdDisp.innerText = sumUSD.toFixed(2);
   if (totalBsDisp) {
-    totalBsDisp.innerText = isNaN(sumBS) ? "0,00" : sumBS.toLocaleString("es-VE", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
+    totalBsDisp.innerText = isNaN(sumBS)
+      ? "0,00"
+      : sumBS.toLocaleString("es-VE", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
   }
   if (cartCount) cartCount.innerText = totalQty;
 }
